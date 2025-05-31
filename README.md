@@ -1,2 +1,2 @@
 # 2dgame
-My first 2d game (Sprites not mine and not finish yet)
+attempt to make a simple game (Sprites not mine and not finish yet)
