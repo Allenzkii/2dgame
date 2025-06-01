@@ -3,6 +3,7 @@ extends CharacterBody2D
 var speed = 40
 var player_chase = false
 var player = null
+var is_hurt = false
 var is_dead = false
 
 var knockback_velocity = Vector2.ZERO
@@ -13,10 +14,15 @@ var health = 100
 var player_inattack_zone = false
 var can_take_damage = true
 
+	
 func _physics_process(delta):
+	
 	deal_with_damage()
 	knockback(delta)
 	
+	if is_dead or is_hurt:
+		return
+		
 	if player_chase:
 		position += (player.position - position)/speed
 		$AnimatedSprite2D.play("walk")
@@ -52,13 +58,19 @@ func _on_detection_area_body_exited(body: Node2D) -> void:
 func deal_with_damage():
 	if player_inattack_zone and Global.player_current_attack == true:
 		if can_take_damage == true and not is_dead:
+			hurt()
 			health = health - 40
 			$Take_dmg_cooldown.start()
 			can_take_damage = false
 			print("Monster health ", health)
+			apply_knockback(player.global_position)
+			
+			
 			if health <= 0:
-				$AnimatedSprite2D.play("dead")
-				self.queue_free()
+				is_dead = true
+				$AnimatedSprite2D.play("death") 
+				$death_timer.start()
+
 func knockback(delta):
 	if knockback_velocity.length() > 0.1:
 		velocity = knockback_velocity
@@ -70,6 +82,18 @@ func knockback(delta):
 func apply_knockback(from_position: Vector2) -> void:
 	var direction: Vector2 = (global_position - from_position).normalized()
 	knockback_velocity = direction * knockback_force
-
+	
 func _on_take_dmg_cooldown_timeout() -> void:
 	can_take_damage =true
+
+
+func _on_death_timer_timeout() -> void:
+	self.queue_free()
+
+func hurt():
+	is_hurt = true
+	$AnimatedSprite2D.play("hurt")
+	$hurt_timer.start()
+
+func _on_hurt_timer_timeout() -> void:
+	is_hurt = false
