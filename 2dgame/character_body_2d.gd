@@ -4,6 +4,7 @@ var enemy_inattack_range = false
 var enemy_attack_cooldown = true
 var health = 100
 var player_alive = true
+var is_dying = false
 
 var attack_ip = false;
 
@@ -14,6 +15,9 @@ func _ready():
 	$AnimatedSprite2D.play("side_idle")
 		
 func _physics_process(delta):
+	if not player_alive or is_dying:
+		return
+		
 	enemy_attack()
 	player_movement(delta)
 	attack()
@@ -22,10 +26,13 @@ func _physics_process(delta):
 		player_alive = false
 		health = 0
 		print("player has been killed")
-		self.queue_free()
+		$AnimatedSprite2D.play("dead") 
 		
 func player_movement(delta):
-	
+	if not player_alive or is_dying:
+		velocity = Vector2.ZERO
+		return
+		
 	if Input.is_action_pressed("right"):
 		cur_dir = "right"
 		play_anim(1)
@@ -108,7 +115,6 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.has_method("enemy"):
 		enemy_inattack_range = true
 
-
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	if body.has_method("enemy"):
 		enemy_inattack_range = false
@@ -136,5 +142,6 @@ func attack():
 
 func _on_deal_attack_timer_timeout() -> void:
 	$deal_attack_timer.stop()
+	
 	Global.player_current_attack = false
 	attack_ip = false
