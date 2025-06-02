@@ -103,14 +103,6 @@ func player():
 func _on_attack_cooldown_timeout() -> void:
 	enemy_attack_cooldown = true
 
-func enemy_attack():
-	if enemy_inattack_range and enemy_attack_cooldown == true:
-		health = health - 20
-		enemy_attack_cooldown = false
-		$attack_cooldown.start()
-		print(health)
-
-
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.has_method("enemy"):
 		enemy_inattack_range = true
