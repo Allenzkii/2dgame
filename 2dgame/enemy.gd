@@ -7,7 +7,7 @@ var is_hurt = false
 var is_dead = false
 
 var knockback_velocity = Vector2.ZERO
-var knockback_force = 400
+var knockback_force = 300
 var knockback_decay = 800
 
 var health = 100
